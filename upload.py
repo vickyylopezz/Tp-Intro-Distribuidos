@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import Client
 import os
 import sys
