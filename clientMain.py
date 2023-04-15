@@ -7,6 +7,7 @@ script_dir = os.path.dirname(__file__)
 mymodule_dir = os.path.join(script_dir, '..', 'common')
 sys.path.append(mymodule_dir)
 
+
 def parseArguments(parser):
     group = parser.add_mutually_exclusive_group(required=False)
 
@@ -33,9 +34,9 @@ def parseArguments(parser):
     parser.add_argument('-n', '--name', type=str, default='archivo',
                         required=False, help='file name', dest='filename')
 
-parser = argparse.ArgumentParser(description='Envía un archivo al' +
-                                    ' servidor para ser guardado' +
-                                    ' con el nombre asignado')
+
+parser = argparse.ArgumentParser(description='Envia un archivo al servidor para ser guardado con el nombre asignado')
+
 parseArguments(parser)
 args = parser.parse_args()
 
