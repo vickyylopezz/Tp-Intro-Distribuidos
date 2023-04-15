@@ -5,7 +5,10 @@ class Server:
         self.socket = SocketUdp.SocketUdp()
         self.socket.bind()
         print("Esperando conexiones...")
-        self.socket.receive()
+        while(True):
+            message, addr = self.socket.receive()
+            print(message)
+            self.socket.sendto('g'.encode(), addr)
         
 
         

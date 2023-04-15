@@ -11,12 +11,14 @@ class SocketUdp:
         self.socket.bind((self.ip, self.port))
 
     def receive(self):
-        while(True):
-            message = self.socket.recvfrom(self.buffer)
-            print(message)
+        message, addr = self.socket.recvfrom(self.buffer)
+        return message.decode(), addr
 
     def send(self, data):
         self.socket.sendto(data, (self.ip, self.port))
+
+    def sendto(self, data, addr):
+        self.socket.sendto(data, addr)
 
     def close(self):
         self.socket.close()
