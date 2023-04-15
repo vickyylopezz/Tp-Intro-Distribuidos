@@ -1,6 +1,7 @@
 import SocketUdp
 import File
 
+
 class Server:
     def __init__(self, host, port, storage_path):
         self.socket = SocketUdp.SocketUdp(host, port)
@@ -17,6 +18,5 @@ class Server:
             while rcv_data < int(messages[1]):
                 data, addr = self.socket.receive()
                 rcv_data += len(data)
-                print(rcv_data)
                 file.write(data)
             file.close()
