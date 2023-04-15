@@ -7,7 +7,7 @@ class File:
         self.fd = None
 
     def size(self):
-      return os.path.getsize(self.fpath)
+        return os.path.getsize(self.fpath)
 
     def open(self, mode):
         self.fd = open(self.fpath, mode)

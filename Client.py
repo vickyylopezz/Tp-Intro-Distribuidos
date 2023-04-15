@@ -9,15 +9,22 @@ class Client:
         self.socket = SocketUdp.SocketUdp(host, port)
         self.file = None
 
-    def send_operation(self, fpath, fname):
+    def send_operation(self, operation, fpath, fname):
         self.file = File.File(fpath, fname)
-        protocol_message = 'u' + '-' + str(self.file.size()) + '-' + fname
+        if operation == "u":
+            protocol_message = operation + '-' + str(self.file.size()) + '-' + fname
+        else:
+            protocol_message = operation + '-' + fname
         encoded_message = str.encode(protocol_message)
         self.socket.send(encoded_message)
 
     def receive(self):
         message, addr = self.socket.receive()
         print(message.decode())
+        return message.decode(), addr
+
+    def send_confirmation(self, addr):
+        self.socket.sendto('g'.encode(), addr)
 
     def send_file(self):
         self.file.open("rb")
@@ -27,5 +34,14 @@ class Client:
                 break
             self.socket.send(chunk)
 
+        self.file.close()
+
+    def receive_file(self, length):
+        rcv_data = 0
+        self.file.open('wb')
+        while rcv_data < int(length):
+            data, addr = self.socket.receive()
+            rcv_data += len(data)
+            self.file.write(data)
         self.file.close()
 

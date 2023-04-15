@@ -18,6 +18,7 @@ fpath = args.filepath
 fname = args.filename
 
 client = Client.Client(host, port)
-client.send_operation("u", fpath, fname)
-client.receive()
-client.send_file()
+client.send_operation("d", fpath, fname)
+length, addr = client.receive()
+client.send_confirmation(addr)
+client.receive_file(length)
