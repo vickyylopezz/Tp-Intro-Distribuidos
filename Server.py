@@ -18,15 +18,6 @@ class Server:
                 self.handle_upload(addr, storage_path, messages)
             if messages[0] == "d":
                 self.handle_download(addr, storage_path, messages)
-            # self.socket.sendto('g'.encode(), addr)
-            # rcv_data = 0
-            # file = File.File(storage_path + "/" + messages[2], messages[2])
-            # file.open('wb')
-            # while rcv_data < int(messages[1]):
-            #    data, addr = self.socket.receive()
-            #    rcv_data += len(data)
-            #    file.write(data)
-            # file.close()
 
     def handle_upload(self, addr, storage_path, messages):
         self.socket.sendto('g'.encode(), addr)

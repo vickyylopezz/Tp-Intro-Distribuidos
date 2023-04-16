@@ -2,8 +2,8 @@ import argparse
 
 
 class Arguments:
-    def __init__(self, description):
-        self.parser = argparse.ArgumentParser(description=description)
+    def __init__(self, description=None):
+        self.parser = argparse.ArgumentParser(description=description or '< command description >')
         self.config()
 
     def config(self):

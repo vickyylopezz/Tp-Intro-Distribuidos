@@ -8,8 +8,8 @@ class ServerArguments(Arguments.Arguments):
     def config(self):
         super().config()
         self.parser.add_argument('-H', '--host', help='host service IP address',
-                                 dest="addr", default='localhost', metavar='ADDR')
+                                 dest='host', default='localhost')
         self.parser.add_argument('-p', '--port', help='service port',
-                                 default=8888, metavar='PORT', type=int)
+                                 dest='port', default=8888, type=int)
         self.parser.add_argument('-s', '--storage', help='storage dir path',
-                                 default="data_base", metavar='DIRPATH')
+                                 dest='storage', default='./files')

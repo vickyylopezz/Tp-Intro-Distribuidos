@@ -1,18 +1,13 @@
 #!/usr/bin/env python3
 
 import Client
-import os
-import sys
 import ClientArguments
+from OperationEnum import OperationEnum
 
-script_dir = os.path.dirname(__file__)
-mymodule_dir = os.path.join(script_dir, '..', 'common')
-sys.path.append(mymodule_dir)
-
-arguments = ClientArguments.ClientArguments()
+arguments = ClientArguments.ClientArguments(OperationEnum.DOWNLOAD)
 args = arguments.parse()
 
-host = args.addr
+host = args.host
 port = args.port
 fpath = args.filepath
 fname = args.filename
