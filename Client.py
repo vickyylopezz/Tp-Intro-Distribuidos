@@ -1,9 +1,10 @@
+import StopAndWait
 from SocketUdp import SocketUdp
 import File 
 
 class Client:
 
-    CHUNK_SIZE = 50000
+    # CHUNK_SIZE = 50000
 
     def __init__(self, server_host, server_port):
         self.server_address = (server_host, server_port)
@@ -35,11 +36,14 @@ class Client:
 
     def send_file(self):
         self.file.open("rb")
-        while True:
-            chunk = self.file.read(self.CHUNK_SIZE)
-            if not chunk:
-                break
-            self.socket.sendto(chunk, self.address)
+        # while True:
+        #     chunk = self.file.read(self.CHUNK_SIZE)
+        #     if not chunk:
+        #         break
+        #     self.socket.sendto(chunk, self.address)
+
+        protocol = StopAndWait.StopAndWait(self.socket)
+        protocol.send(self.file, self.address)
 
         self.file.close()
 

@@ -1,5 +1,6 @@
 import socket
 
+import StopAndWait
 from SocketUdp import SocketUdp
 from File import File
 import threading
@@ -56,10 +57,12 @@ class Server:
         rcv_data = 0
         file = File(storage_path + "/" + messages[2], messages[2])
         file.open('wb')
-        while rcv_data < int(messages[1]):
-            data, addr = client_socket.receive()
-            rcv_data += len(data)
-            file.write(data)
+        # while rcv_data < int(messages[1]):
+        #     data, addr = client_socket.receive()
+        #     rcv_data += len(data)
+        #     file.write(data)
+        protocol = StopAndWait.StopAndWait(client_socket)
+        protocol.receive(file, int(messages[1]))
         file.close()
         client_socket.close()
 
