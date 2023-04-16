@@ -8,10 +8,10 @@ port = args.port
 storage_path = args.storage
 
 server = Server(host, port, storage_path)
-i = server.start()
+server.start()
 while server.active:
     try:
-        print('Para finalizar el server apretar q')
+        print('Para finalizar q')
         if input().lower() == 'q':
             server.stop()
     except KeyboardInterrupt:

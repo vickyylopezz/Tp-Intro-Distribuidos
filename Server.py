@@ -34,9 +34,13 @@ class Server:
             self.socket.timeout(5)
             try:
                 protocol_message, addr = self.socket.receive()
-                self.handle_client(protocol_message, addr)
+                client_thread = threading.Thread(target=self.handle_client, args=(protocol_message, addr))
+                client_thread.start()
+                self.threads.append(client_thread)
             except socket.timeout:
                 continue
+        for t in self.threads:
+            t.join()
 
     def handle_client(self, message, address):
         print(message)
@@ -47,15 +51,17 @@ class Server:
             self.handle_download(address, self.storage, messages)
 
     def handle_upload(self, addr, storage_path, messages):
-        self.socket.sendto('g'.encode(), addr)
+        client_socket = SocketUdp()
+        client_socket.sendto('g'.encode(), addr)
         rcv_data = 0
         file = File(storage_path + "/" + messages[2], messages[2])
         file.open('wb')
         while rcv_data < int(messages[1]):
-            data, addr = self.socket.receive()
+            data, addr = client_socket.receive()
             rcv_data += len(data)
             file.write(data)
         file.close()
+        client_socket.close()
 
     def handle_download(self, addr, storage_path, messages):
         file = File(storage_path + "/" + messages[1], messages[1])

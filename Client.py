@@ -1,12 +1,14 @@
-import SocketUdp
+from SocketUdp import SocketUdp
 import File 
 
 class Client:
 
     CHUNK_SIZE = 50000
 
-    def __init__(self, host, port):
-        self.socket = SocketUdp.SocketUdp(host, port)
+    def __init__(self, server_host, server_port):
+        self.server_address = (server_host, server_port)
+        self.socket = SocketUdp()
+        self.address = None
         self.file = None
 
     def send_operation(self, operation, fpath, fname):
@@ -16,7 +18,12 @@ class Client:
         else:
             protocol_message = operation + '-' + fname
         encoded_message = str.encode(protocol_message)
-        self.socket.send(encoded_message)
+        self.socket.sendto(encoded_message, self.server_address)
+
+    def wait_confirmation(self):
+        confirmation, new_address = self.socket.receive()
+        print(confirmation)
+        self.address = new_address
 
     def receive(self):
         message, addr = self.socket.receive()
@@ -32,7 +39,7 @@ class Client:
             chunk = self.file.read(self.CHUNK_SIZE)
             if not chunk:
                 break
-            self.socket.send(chunk)
+            self.socket.sendto(chunk, self.address)
 
         self.file.close()
 

@@ -14,5 +14,5 @@ fname = args.filename
 
 client = Client(host, port)
 client.send_operation(OperationEnum.UPLOAD.value, fpath, fname)
-client.receive()
+client.wait_confirmation()
 client.send_file()
