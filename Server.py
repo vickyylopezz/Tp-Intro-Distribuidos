@@ -1,3 +1,5 @@
+import socket
+
 from SocketUdp import SocketUdp
 from File import File
 import threading
@@ -11,17 +13,30 @@ class Server:
         self.socket = SocketUdp(host, port)
         self.socket.bind()
         self.storage = storage_path
+        self.active = False
         self.main_thread = None
         self.threads = []
 
     def start(self):
-        self.main_thread = threading.Thread(target=self.listen())
+        print('Inicio server')
+        self.main_thread = threading.Thread(target=self.listen)
         self.main_thread.start()
 
+    def stop(self):
+        self.active = False
+        self.main_thread.join()
+        print('Fin server')
+
     def listen(self):
-        while True:
-            protocol_message, addr = self.socket.receive()
-            self.handle_client(protocol_message, addr)
+        self.active = True
+        print('Escuchando')
+        while self.active:
+            self.socket.timeout(5)
+            try:
+                protocol_message, addr = self.socket.receive()
+                self.handle_client(protocol_message, addr)
+            except socket.timeout:
+                continue
 
     def handle_client(self, message, address):
         print(message)

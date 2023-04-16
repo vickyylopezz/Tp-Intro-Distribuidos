@@ -6,6 +6,9 @@ class SocketUdp:
         self.port = port or 8888
         self.buffer = 50000
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+
+    def timeout(self, time):
+        self.socket.settimeout(time)
         
     def bind(self):
         self.socket.bind((self.ip, self.port))
