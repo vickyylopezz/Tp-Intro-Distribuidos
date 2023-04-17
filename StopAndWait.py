@@ -43,15 +43,15 @@ class StopAndWait:
             try:
                 timeout = self.timer.getTimeout() - (now() - start)
                 self.socket.timeout(timeout)
-                print(timeout)
+                # print(timeout)
                 pkt_received, _ = self.socket.receive() # revisar, puede ser que le tengamos que pasar el tamanio del mensaje esperado
                 # puede ser que sirva la direccion que devuelve por el multithreading
                 seq_num_received, _ = self.__unpack(pkt_received)
 
-                print("waiting:")
-                print(self.sender_seqnum)
-                print("received:")
-                print(seq_num_received)
+                # print("waiting:")
+                # print(self.sender_seqnum)
+                # print("received:")
+                # print(seq_num_received)
                 if seq_num_received == self.sender_seqnum:
                     self.timer.calculateTimeout(now() - start)
                     self.socket.timeout(None)
@@ -61,7 +61,7 @@ class StopAndWait:
             except socket.timeout:
                 if last_send:
                     timeouts += 1
-                print("timeout")
+                # print("timeout")
                 self.timer.timeout()
                 # sent = self.socket.sendto(pkt, addr)
                 self.socket.sendto(pkt, addr)
@@ -104,8 +104,11 @@ class StopAndWait:
 
     def _recv(self, buffsize, first_time):
         correct_seq_numb = False
-        print("-----chunks-----")
-        print(buffsize)
+        # print("-----chunks-----")
+        # print(buffsize)
+        # podriamos dejar el timeout para todos los casos, no?
+        # si el cliente muere esperamos unos segundos y salimos
+        # sino vamos a quedar esperando para siempre. Creo que es innecesario el first_time
         if first_time:
             self.socket.timeout(10)
         else:
@@ -118,13 +121,13 @@ class StopAndWait:
                 pkt_received, source = self.socket.receive()
                 seq_num_received, data_received = self.__unpack(pkt_received)
 
-                print("pkt:")
-                print(pkt_received)
-                print("waiting:")
-                print(self.receiver_seqnum)
-                print("seq num received:")
-                print(seq_num_received)
-                print(data_received)
+                # print("pkt:")
+                # print(pkt_received)
+                # print("waiting:")
+                # print(self.receiver_seqnum)
+                # print("seq num received:")
+                # print(seq_num_received)
+                # print(data_received)
                 if seq_num_received == self.receiver_seqnum:
                     pkt = self.__pack(self.receiver_seqnum, b'')
                     self.socket.sendto(pkt, source)
@@ -141,8 +144,8 @@ class StopAndWait:
         #return data_received, source
 
     def receive(self, file, buffsize):
-        print("quiero recibir estos bytes:")
-        print(buffsize)
+        # print("quiero recibir estos bytes:")
+        # print(buffsize)
         # data = []
         # for i in range(0, buffsize, self.MAX_DATAGRAM_SIZE):
         #     print("-------Iteracion numero-------")

@@ -1,10 +1,9 @@
 import socket
-
 import StopAndWait
 from SocketUdp import SocketUdp
 from File import File
 import threading
-
+import random
 
 class Server:
 
@@ -52,9 +51,13 @@ class Server:
             self.handle_download(address, self.storage, messages)
 
     def handle_upload(self, addr, storage_path, messages):
-        client_socket = SocketUdp()
-        print(addr)
+        # no hay que pasarle un numero random?
+        # sino crea el socket del cliente en el 8888 tambien
+        client_socket = SocketUdp() 
+        # print(addr)
+        print(client_socket.port)
         client_socket.sendto('g'.encode(), addr)
+        print("envio confirmacion")
         rcv_data = 0
         file = File(storage_path + "/" + messages[2], messages[2])
         file.open('wb')

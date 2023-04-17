@@ -11,29 +11,32 @@ class Client:
         self.socket = SocketUdp()
         self.address = None
         self.file = None
+        self.protocol_message = None
 
     def send_operation(self, operation, fpath, fname):
         self.file = File.File(fpath, fname)
         if operation == "u":
-            protocol_message = operation + '-' + str(self.file.size()) + '-' + fname
+            self.protocol_message = operation + '-' + str(self.file.size()) + '-' + fname
         else:
-            protocol_message = operation + '-' + fname
-        encoded_message = str.encode(protocol_message)
+            self.protocol_message = operation + '-' + fname
+        encoded_message = str.encode(self.protocol_message)
         self.socket.sendto(encoded_message, self.server_address)
 
     def wait_confirmation(self):
         timeouts = 0
         print(self.server_address)
-        while timeouts < 3:
-            print("Intento numero: " + str(timeouts))
-            self.socket.timeout(3)
+        while timeouts < 5:
+            print("Intento numero: " + str(timeouts + 1))
+            self.socket.timeout(2)
             try:
                 confirmation, new_address = self.socket.receive()
                 print(confirmation)
+                print(new_address)
                 self.address = new_address
                 return True
             except:
                 timeouts += 1
+                self.socket.sendto(self.protocol_message.encode(), self.server_address)
 
         return False
 
