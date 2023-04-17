@@ -53,6 +53,7 @@ class Server:
 
     def handle_upload(self, addr, storage_path, messages):
         client_socket = SocketUdp()
+        print(addr)
         client_socket.sendto('g'.encode(), addr)
         rcv_data = 0
         file = File(storage_path + "/" + messages[2], messages[2])

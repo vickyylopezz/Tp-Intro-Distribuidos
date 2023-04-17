@@ -10,7 +10,7 @@ class ClientArguments(Arguments.Arguments):
 
     def config(self):
         super().config()
-        self.parser.add_argument('-H', '--host', type=str, default='localhost',
+        self.parser.add_argument('-H', '--host', type=str, default='10.0.0.1',
                                  required=False, help='server IP address', dest='host')
         self.parser.add_argument('-p', '--port', type=int, default=8888,
                                  required=False, help='server port')

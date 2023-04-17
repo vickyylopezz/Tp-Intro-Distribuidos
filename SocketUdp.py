@@ -4,7 +4,8 @@ class SocketUdp:
     def __init__(self, ip=None, port=None):
         self.ip = ip or '127.0.0.1'
         self.port = port or 8888
-        self.buffer = 50000
+        # self.buffer = 50000
+        self.buffer = 1472
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
     def timeout(self, time):

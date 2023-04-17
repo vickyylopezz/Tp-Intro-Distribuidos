@@ -14,5 +14,9 @@ fname = args.filename
 
 client = Client(host, port)
 client.send_operation(OperationEnum.UPLOAD.value, fpath, fname)
-client.wait_confirmation()
+connected = client.wait_confirmation()
+if not connected:
+  client.close_socket()
+  print("No obtuve respuesta del servidor, desconectando")
+  exit(1)
 client.send_file()

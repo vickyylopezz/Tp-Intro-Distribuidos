@@ -11,9 +11,10 @@ def toggle(seq_number):
 class StopAndWait:
     SEQ_NUM_SIZE = 1
     # MAX_DATAGRAM_SIZE = 64000    # 64kb
-    # MAX_TIMEOUTS = 6
+    MAX_TIMEOUTS = 6
     # CHUNK_SIZE = 50000
-    CHUNK_SIZE = 49999
+    # CHUNK_SIZE = 49999
+    CHUNK_SIZE = 1471
 
     def __init__(self, socket):
         self.sender_seqnum = b'0'
@@ -29,19 +30,20 @@ class StopAndWait:
         data = packet[self.SEQ_NUM_SIZE:]
         return seq_num, data
 
-    def _send_a_packet(self, data, addr):
+    def _send_a_packet(self, data, addr, last_send):
         pkt = self.__pack(self.sender_seqnum, data)
         # sent = self.socket.sendto(pkt, addr)
         self.socket.sendto(pkt, addr)
         start = now()
         acknowledged = False
-        # timeouts = 0
-        # if last_send:
-        #     print("----Last send----")
+        timeouts = 0
+        if last_send:
+            print("----Last send----")
         while not acknowledged:
             try:
                 timeout = self.timer.getTimeout() - (now() - start)
                 self.socket.timeout(timeout)
+                print(timeout)
                 pkt_received, _ = self.socket.receive() # revisar, puede ser que le tengamos que pasar el tamanio del mensaje esperado
                 # puede ser que sirva la direccion que devuelve por el multithreading
                 seq_num_received, _ = self.__unpack(pkt_received)
@@ -57,18 +59,18 @@ class StopAndWait:
                     acknowledged = True
 
             except socket.timeout:
-                # if last_send:
-                #     timeouts += 1
+                if last_send:
+                    timeouts += 1
                 print("timeout")
                 self.timer.timeout()
                 # sent = self.socket.sendto(pkt, addr)
                 self.socket.sendto(pkt, addr)
                 start = now()
 
-            # if last_send and timeouts >= self.MAX_TIMEOUTS:
-            #     self.sender_seqnum = toggle(self.sender_seqnum)
-            #     self.socket.settimeout(None)
-            #     break
+            if last_send and timeouts >= self.MAX_TIMEOUTS:
+                self.sender_seqnum = toggle(self.sender_seqnum)
+                self.socket.timeout(None)
+                break
 
         # return sent
 
@@ -91,40 +93,51 @@ class StopAndWait:
 
         # self.socket.settimeout(None)
         # return sent
-
         while True:
+            last_send = False
             chunk = file.read(self.CHUNK_SIZE)
             if not chunk:
                 break
-            self._send_a_packet(chunk, addr)
+            if len(chunk) < self.CHUNK_SIZE:
+                last_send = True
+            self._send_a_packet(chunk, addr, last_send)
 
-    def _recv(self, buffsize):
+    def _recv(self, buffsize, first_time):
         correct_seq_numb = False
         print("-----chunks-----")
         print(buffsize)
-        while not correct_seq_numb:
-            # pkt_received, source = self.socket.recvfrom(
-            #     buffsize + self.SEQ_NUM_SIZE)
-            pkt_received, source = self.socket.receive()
-            seq_num_received, data_received = self.__unpack(pkt_received)
+        if first_time:
+            self.socket.timeout(10)
+        else:
+            self.socket.timeout(None)
 
-            print("pkt:")
-            print(pkt_received)
-            print("waiting:")
-            print(self.receiver_seqnum)
-            print("seq num received:")
-            print(seq_num_received)
-            print(data_received)
-            if seq_num_received == self.receiver_seqnum:
-                pkt = self.__pack(self.receiver_seqnum, b'')
-                self.socket.sendto(pkt, source)
-                self.receiver_seqnum = toggle(self.receiver_seqnum)
-                correct_seq_numb = True
-            else:
-                pkt = self.__pack(toggle(self.receiver_seqnum), b'')
-                self.socket.sendto(pkt, source)
+        try:
+            while not correct_seq_numb:
+                # pkt_received, source = self.socket.recvfrom(
+                #     buffsize + self.SEQ_NUM_SIZE)
+                pkt_received, source = self.socket.receive()
+                seq_num_received, data_received = self.__unpack(pkt_received)
 
-        return data_received
+                print("pkt:")
+                print(pkt_received)
+                print("waiting:")
+                print(self.receiver_seqnum)
+                print("seq num received:")
+                print(seq_num_received)
+                print(data_received)
+                if seq_num_received == self.receiver_seqnum:
+                    pkt = self.__pack(self.receiver_seqnum, b'')
+                    self.socket.sendto(pkt, source)
+                    self.receiver_seqnum = toggle(self.receiver_seqnum)
+                    correct_seq_numb = True
+                else:
+                    pkt = self.__pack(toggle(self.receiver_seqnum), b'')
+                    self.socket.sendto(pkt, source)
+
+            return data_received
+        
+        except:
+            return 0
         #return data_received, source
 
     def receive(self, file, buffsize):
@@ -142,8 +155,14 @@ class StopAndWait:
         # print(data)
         # return data, s
         rcv_data = 0
+        first_time = True
         while rcv_data < buffsize:
             # data, addr = self._recv()
-            data = self._recv(buffsize)
+            data = self._recv(buffsize, first_time)
+            if data == 0:
+                self.socket.close()
+                print("No obtuve datos del otro lado, desconectando")
+                exit(1)
             rcv_data += len(data)
             file.write(data)
+            first_time = False

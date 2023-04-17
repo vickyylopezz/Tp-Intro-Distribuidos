@@ -22,9 +22,20 @@ class Client:
         self.socket.sendto(encoded_message, self.server_address)
 
     def wait_confirmation(self):
-        confirmation, new_address = self.socket.receive()
-        print(confirmation)
-        self.address = new_address
+        timeouts = 0
+        print(self.server_address)
+        while timeouts < 3:
+            print("Intento numero: " + str(timeouts))
+            self.socket.timeout(3)
+            try:
+                confirmation, new_address = self.socket.receive()
+                print(confirmation)
+                self.address = new_address
+                return True
+            except:
+                timeouts += 1
+
+        return False
 
     def receive(self):
         message, addr = self.socket.receive()
@@ -46,6 +57,7 @@ class Client:
         protocol.send(self.file, self.address)
 
         self.file.close()
+        self.socket.close()
 
     def receive_file(self, length):
         rcv_data = 0
@@ -56,3 +68,5 @@ class Client:
             self.file.write(data)
         self.file.close()
 
+    def close_socket(self):
+        self.socket.close()

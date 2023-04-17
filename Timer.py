@@ -17,7 +17,7 @@ class Timer:
         self.timeoutInterval = self.estimatedRTT + 4 * self.devRTT
 
     def getTimeout(self):
-        return min(self.timeoutInterval, 1)
+        return max(0.01, min(self.timeoutInterval, 1))
 
     def timeout(self):
         self.timeoutInterval *= 2
