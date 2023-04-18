@@ -1,3 +1,4 @@
+import SelectiveRepeat
 import StopAndWait
 from SocketUdp import SocketUdp
 import File 
@@ -57,6 +58,7 @@ class Client:
         #     self.socket.sendto(chunk, self.address)
 
         protocol = StopAndWait.StopAndWait(self.socket)
+        #protocol = SelectiveRepeat.SelectiveRepeat(self.socket)
         protocol.send(self.file, self.address)
 
         self.file.close()

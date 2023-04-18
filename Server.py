@@ -1,4 +1,5 @@
 import socket
+import SelectiveRepeat
 import StopAndWait
 from SocketUdp import SocketUdp
 from File import File
@@ -65,6 +66,7 @@ class Server:
         #     data, addr = client_socket.receive()
         #     rcv_data += len(data)
         #     file.write(data)
+        #protocol = SelectiveRepeat.SelectiveRepeat(client_socket)
         protocol = StopAndWait.StopAndWait(client_socket)
         protocol.receive(file, int(messages[1]))
         file.close()
