@@ -19,9 +19,12 @@ class ATopo(Topo):
 
         # Create hosts
         h1 = self.addHost('Servidor')
+        s = self.addSwitch('s23')
+        self.addLink(h1, s, cls=TCLink, loss=loss)
+
         while(created_clients < clients):
             c = self.addHost('cliente_' + str(created_clients + 1))
-            self.addLink(h1, c, cls=TCLink, loss=loss)
+            self.addLink(s, c, cls=TCLink, loss=loss)
             created_clients += 1
 
 
