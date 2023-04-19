@@ -48,12 +48,17 @@ class SelectiveRepeat:
                 ack, addr = self.socket.receive()
                 seq_num_receive, _ = self.__unpack(ack)
                 ack_num = int.from_bytes(seq_num_receive, "big")
-                if ack_num >= self.base:
+
+                if ack_num == self.base:
+                    aux = self.base + 1
+                    while aux not in self.unacked_packets:
+                        aux = aux +1
+                    self.base = aux
+
+                if ack_num > self.base:
                     # Update base and remove acknowledged packets from unacked_packets
-                    self.base = ack_num + 1
-                    for seq_num in range(self.base):
-                        if seq_num in self.unacked_packets:
-                            del self.unacked_packets[seq_num]
+                    if ack_num in self.unacked_packets:
+                        del self.unacked_packets[ack_num]
             except socket.timeout:
                 # Resend unacknowledged packets
                 for seq_num, packet in self.unacked_packets.items():
