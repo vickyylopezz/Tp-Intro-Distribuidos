@@ -1,7 +1,11 @@
+import socket
+
 import SelectiveRepeat
 import StopAndWait
+from Logging import Logging
 from SocketUdp import SocketUdp
-import File 
+import File
+
 
 class Client:
 
@@ -15,6 +19,8 @@ class Client:
         self.protocol_message = None
 
     def send_operation(self, operation, fpath, fname):
+        log = Logging()
+        log.log('Enviamos operacion')
         self.file = File.File(fpath, fname)
         if operation == "u":
             self.protocol_message = operation + '-' + str(self.file.size()) + '-' + fname
@@ -24,18 +30,18 @@ class Client:
         self.socket.sendto(encoded_message, self.server_address)
 
     def wait_confirmation(self):
+        log = Logging()
         timeouts = 0
-        print(self.server_address)
+        log.log('Esperamos confirmacion')
         while timeouts < 5:
-            print("Intento numero: " + str(timeouts + 1))
+            log.log("Intento numero: " + str(timeouts + 1))
             self.socket.timeout(2)
             try:
                 confirmation, new_address = self.socket.receive()
-                print(confirmation)
-                print(new_address)
+                log.log('Recibimos confirmacion')
                 self.address = new_address
                 return True
-            except:
+            except socket.timeout:
                 timeouts += 1
                 self.socket.sendto(self.protocol_message.encode(), self.server_address)
 
@@ -50,6 +56,8 @@ class Client:
         self.socket.sendto('g'.encode(), addr)
 
     def send_file(self):
+        log = Logging()
+        log.log("Enviamos archivo")
         self.file.open("rb")
         # while True:
         #     chunk = self.file.read(self.CHUNK_SIZE)
@@ -58,7 +66,7 @@ class Client:
         #     self.socket.sendto(chunk, self.address)
 
         protocol = StopAndWait.StopAndWait(self.socket)
-        #protocol = SelectiveRepeat.SelectiveRepeat(self.socket)
+        # protocol = SelectiveRepeat.SelectiveRepeat(self.socket)
         protocol.send(self.file, self.address)
 
         self.file.close()

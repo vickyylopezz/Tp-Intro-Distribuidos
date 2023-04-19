@@ -1,6 +1,9 @@
 import socket
+
+from Logging import Logging
 from Timer import Timer
 from time import perf_counter as now
+
 
 def toggle(seq_number):
     if seq_number == b'0':
@@ -31,6 +34,8 @@ class StopAndWait:
         return seq_num, data
 
     def _send_a_packet(self, data, addr, last_send):
+        log = Logging()
+
         pkt = self.__pack(self.sender_seqnum, data)
         # sent = self.socket.sendto(pkt, addr)
         self.socket.sendto(pkt, addr)
@@ -38,13 +43,13 @@ class StopAndWait:
         acknowledged = False
         timeouts = 0
         if last_send:
-            print("----Last send----")
+            log.log("Ultimo paquete")
         while not acknowledged:
             try:
                 timeout = self.timer.getTimeout() - (now() - start)
                 self.socket.timeout(timeout)
                 # print(timeout)
-                pkt_received, _ = self.socket.receive() # revisar, puede ser que le tengamos que pasar el tamanio del mensaje esperado
+                pkt_received, _ = self.socket.receive()  # revisar, puede ser que le tengamos que pasar el tamanio del mensaje esperado
                 # puede ser que sirva la direccion que devuelve por el multithreading
                 seq_num_received, _ = self.__unpack(pkt_received)
 
@@ -138,10 +143,10 @@ class StopAndWait:
                     self.socket.sendto(pkt, source)
 
             return data_received
-        
+
         except:
             return 0
-        #return data_received, source
+        # return data_received, source
 
     def receive(self, file, buffsize):
         # print("quiero recibir estos bytes:")
