@@ -28,6 +28,7 @@ class SelectiveRepeat:
 
         # Send packets to server
         while True:
+            
             chunk = file.read(self.CHUNK_SIZE)
             if not chunk:
                 break
@@ -41,32 +42,34 @@ class SelectiveRepeat:
                 self.socket.sendto(data, addr)
                 self.unacked_packets[seq_num] = packet
                 self.next_seq_num += 1
-
+            
             # Receive ACKs and update state
             #self.socket.timeout(TIMEOUT)
-            try:
-                ack, addr = self.socket.receive()
-                seq_num_receive, _ = self.__unpack(ack)
-                ack_num = int.from_bytes(seq_num_receive, "big")
+            if(self.base < len(packets)):
+                try:
+                    ack, addr = self.socket.receive()
+                    seq_num_receive, _ = self.__unpack(ack)
+                    ack_num = int.from_bytes(seq_num_receive, "big")
 
-                if ack_num == self.base:
-                    aux = self.base + 1
-                    while aux not in self.unacked_packets:
-                        aux = aux +1
-                    self.base = aux
+                    if ack_num == self.base:
+                        aux = self.base + 1
+                        while aux not in self.unacked_packets and aux < len(packets):
+                            aux = aux +1
+                        self.base = aux
 
-                if ack_num > self.base:
-                    # Update base and remove acknowledged packets from unacked_packets
-                    if ack_num in self.unacked_packets:
-                        del self.unacked_packets[ack_num]
-            except socket.timeout:
-                # Resend unacknowledged packets
-                for seq_num, packet in self.unacked_packets.items():
-                    self.socket.sendto(self.__pack(seq_num.to_bytes(2, byteorder="big"), packet), addr)
+                    if ack_num > self.base:
+                        # Update base and remove acknowledged packets from unacked_packets
+                        if ack_num in self.unacked_packets:
+                            del self.unacked_packets[ack_num]
+                except socket.timeout:
+                    # Resend unacknowledged packets
+                    for seq_num, packet in self.unacked_packets.items():
+                        self.socket.sendto(self.__pack(seq_num.to_bytes(2, byteorder="big"), packet), addr)
 
             # Exit loop if all packets have been acknowledged
             if self.base == len(packets):
                 break
+
 
     def receive(self, file, buffsize):
         rcv_data = 0
@@ -75,6 +78,7 @@ class SelectiveRepeat:
             packet, addr = self.socket.receive()
             seq_num, data = self.__unpack(packet)
             seq_num_int = int.from_bytes(seq_num, "big")
+            print(seq_num_int)
             #seq_num = self.expected_seq_num
             
             # Send ACK for received packet
