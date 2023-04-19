@@ -52,14 +52,12 @@ class Server:
             self.handle_download(address, self.storage, messages)
 
     def handle_upload(self, addr, storage_path, messages):
-        # no hay que pasarle un numero random?
-        # sino crea el socket del cliente en el 8888 tambien
         client_socket = SocketUdp() 
         # print(addr)
         print(client_socket.port)
         client_socket.sendto('g'.encode(), addr)
         print("envio confirmacion")
-        rcv_data = 0
+        # rcv_data = 0
         file = File(storage_path + "/" + messages[2], messages[2])
         file.open('wb')
         # while rcv_data < int(messages[1]):
@@ -73,15 +71,27 @@ class Server:
         client_socket.close()
 
     def handle_download(self, addr, storage_path, messages):
+        client_socket = SocketUdp()
         file = File(storage_path + "/" + messages[1], messages[1])
-        self.socket.sendto(str(file.size()).encode(), addr)
-        confirmation, addr = self.socket.receive()
-        print(confirmation)
+        client_socket.sendto(str(file.size()).encode(), addr)
+        print("esperando confirmacion")
+        # deberia haber un timeout por si se cae la longitud o la conf del cliente
+        client_socket.timeout(5)
+        try:
+            confirmation, addr = client_socket.receive()
+            print("llego la confirmacion, comienza transferencia")
+        except:
+            print("No recibi confirmacion, desconectando")
+            client_socket.close()
+            return # ?
         file.open("rb")
-        while True:
-            chunk = file.read(self.CHUNK_SIZE)
-            if not chunk:
-                break
-            self.socket.sendto(chunk, addr)
+        # while True:
+        #     chunk = file.read(self.CHUNK_SIZE)
+        #     if not chunk:
+        #         break
+        #     self.socket.sendto(chunk, addr)
+        protocol = StopAndWait.StopAndWait(client_socket)
+        protocol.send(file, addr)
 
         file.close()
+        client_socket.close()

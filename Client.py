@@ -47,13 +47,32 @@ class Client:
 
         return False
 
-    def receive(self):
-        message, addr = self.socket.receive()
-        print(message.decode())
-        return message.decode(), addr
+    def receive_length(self):
+        # length, addr = self.socket.receive()
+        # print(length.decode())
+        # return length.decode(), addr
+        log = Logging()
+        timeouts = 0
+        log.log('Esperamos longitud del archivo')
+        while timeouts < 5:
+            log.log("Intento numero: " + str(timeouts + 1))
+            self.socket.timeout(2)
+            try:
+                length, new_address = self.socket.receive()
+                log.log('Recibimos longitud')
+                self.address = new_address
+                return length
+            except socket.timeout:
+                timeouts += 1
+                self.socket.sendto(self.protocol_message.encode(), self.server_address)
 
-    def send_confirmation(self, addr):
-        self.socket.sendto('g'.encode(), addr)
+        return 0
+
+    def send_confirmation(self):
+        # podria haber un intento de reenviar la confirmacion
+        print("envio confirmacion")
+        self.socket.sendto('g'.encode(), self.address)
+        print("confirmacion enviada")
 
     def send_file(self):
         log = Logging()
@@ -73,13 +92,18 @@ class Client:
         self.socket.close()
 
     def receive_file(self, length):
-        rcv_data = 0
+        # rcv_data = 0
         self.file.open('wb')
-        while rcv_data < int(length):
-            data, addr = self.socket.receive()
-            rcv_data += len(data)
-            self.file.write(data)
+        # while rcv_data < int(length):
+        #     data, addr = self.socket.receive()
+        #     rcv_data += len(data)
+        #     self.file.write(data)
+        # self.file.close()
+
+        protocol = StopAndWait.StopAndWait(self.socket)
+        protocol.receive(self.file, int(length))
         self.file.close()
+        self.socket.close()
 
     def close_socket(self):
         self.socket.close()
