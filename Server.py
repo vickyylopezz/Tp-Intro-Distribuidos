@@ -64,6 +64,7 @@ class Server:
         #     data, addr = client_socket.receive()
         #     rcv_data += len(data)
         #     file.write(data)
+        
         #protocol = SelectiveRepeat.SelectiveRepeat(client_socket)
         protocol = StopAndWait.StopAndWait(client_socket)
         protocol.receive(file, int(messages[1]))
@@ -90,6 +91,8 @@ class Server:
         #     if not chunk:
         #         break
         #     self.socket.sendto(chunk, addr)
+        
+        #protocol = SelectiveRepeat.SelectiveRepeat(client_socket)
         protocol = StopAndWait.StopAndWait(client_socket)
         protocol.send(file, addr)
 

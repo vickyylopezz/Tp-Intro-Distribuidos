@@ -85,7 +85,7 @@ class Client:
         #     self.socket.sendto(chunk, self.address)
 
         protocol = StopAndWait.StopAndWait(self.socket)
-        # protocol = SelectiveRepeat.SelectiveRepeat(self.socket)
+        #protocol = SelectiveRepeat.SelectiveRepeat(self.socket)
         protocol.send(self.file, self.address)
 
         self.file.close()
@@ -100,6 +100,7 @@ class Client:
         #     self.file.write(data)
         # self.file.close()
 
+        #protocol = SelectiveRepeat.SelectiveRepeat(self.socket)
         protocol = StopAndWait.StopAndWait(self.socket)
         protocol.receive(self.file, int(length))
         self.file.close()
