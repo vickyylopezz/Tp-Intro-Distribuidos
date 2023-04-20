@@ -13,10 +13,7 @@ def toggle(seq_number):
 
 class StopAndWait:
     SEQ_NUM_SIZE = 1
-    # MAX_DATAGRAM_SIZE = 64000    # 64kb
     MAX_TIMEOUTS = 6
-    # CHUNK_SIZE = 50000
-    # CHUNK_SIZE = 49999
     CHUNK_SIZE = 1471
 
     def __init__(self, socket):
