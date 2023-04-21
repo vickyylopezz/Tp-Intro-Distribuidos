@@ -13,6 +13,7 @@ port = args.port
 fpath = args.filepath
 fname = args.filename
 verbose = args.verbose
+transport_protocol = args.transport_protocol
 
 log = Logging()
 log.set_verbose(verbose)
@@ -24,4 +25,4 @@ if not connected:
   client.close_socket()
   log.log('No obtuve respuesta del servidor, desconectando')
   exit(1)
-client.send_file()
+client.send_file(transport_protocol)

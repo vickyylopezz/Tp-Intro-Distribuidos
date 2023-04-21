@@ -4,19 +4,17 @@ import StopAndWait
 from SocketUdp import SocketUdp
 from File import File
 import threading
-import random
 
 class Server:
 
-    CHUNK_SIZE = 50000
-
-    def __init__(self, host, port, storage_path):
+    def __init__(self, host, port, storage_path, transport_protocol):
         self.socket = SocketUdp(host, port)
         self.socket.bind()
         self.storage = storage_path
         self.active = False
         self.main_thread = None
         self.threads = []
+        self.transport_protocol = transport_protocol
 
     def start(self):
         print('Inicio server')
@@ -65,8 +63,13 @@ class Server:
         #     rcv_data += len(data)
         #     file.write(data)
         
-        #protocol = SelectiveRepeat.SelectiveRepeat(client_socket)
-        protocol = StopAndWait.StopAndWait(client_socket)
+        if(self.transport_protocol == "saw"):
+            protocol = StopAndWait.StopAndWait(client_socket)
+        elif(self.transport_protocol == "sr"):
+            protocol = SelectiveRepeat.SelectiveRepeat(client_socket)
+
+        # protocol = SelectiveRepeat.SelectiveRepeat(client_socket)
+        # protocol = StopAndWait.StopAndWait(client_socket)
         protocol.receive(file, int(messages[1]))
         file.close()
         client_socket.close()
@@ -91,9 +94,14 @@ class Server:
         #     if not chunk:
         #         break
         #     self.socket.sendto(chunk, addr)
+
+        if(self.transport_protocol == "saw"):
+            protocol = StopAndWait.StopAndWait(client_socket)
+        elif(self.transport_protocol == "sr"):
+            protocol = SelectiveRepeat.SelectiveRepeat(client_socket)
         
-        #protocol = SelectiveRepeat.SelectiveRepeat(client_socket)
-        protocol = StopAndWait.StopAndWait(client_socket)
+        # protocol = SelectiveRepeat.SelectiveRepeat(client_socket)
+        # protocol = StopAndWait.StopAndWait(client_socket)
         protocol.send(file, addr)
 
         file.close()

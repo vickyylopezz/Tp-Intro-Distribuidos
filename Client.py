@@ -74,7 +74,7 @@ class Client:
         self.socket.sendto('g'.encode(), self.address)
         print("confirmacion enviada")
 
-    def send_file(self):
+    def send_file(self, transport_protocol):
         log = Logging()
         log.log("Enviamos archivo")
         self.file.open("rb")
@@ -84,14 +84,17 @@ class Client:
         #         break
         #     self.socket.sendto(chunk, self.address)
 
-        protocol = StopAndWait.StopAndWait(self.socket)
-        #protocol = SelectiveRepeat.SelectiveRepeat(self.socket)
+        if(transport_protocol == "saw"):
+            protocol = StopAndWait.StopAndWait(self.socket)
+        elif(transport_protocol == "sr"):
+            protocol = SelectiveRepeat.SelectiveRepeat(self.socket)
+
         protocol.send(self.file, self.address)
 
         self.file.close()
         self.socket.close()
 
-    def receive_file(self, length):
+    def receive_file(self, length, transport_protocol):
         # rcv_data = 0
         self.file.open('wb')
         # while rcv_data < int(length):
@@ -100,8 +103,11 @@ class Client:
         #     self.file.write(data)
         # self.file.close()
 
-        #protocol = SelectiveRepeat.SelectiveRepeat(self.socket)
-        protocol = StopAndWait.StopAndWait(self.socket)
+        if(transport_protocol == "saw"):
+            protocol = StopAndWait.StopAndWait(self.socket)
+        elif(transport_protocol == "sr"):
+            protocol = SelectiveRepeat.SelectiveRepeat(self.socket)
+            
         protocol.receive(self.file, int(length))
         self.file.close()
         self.socket.close()

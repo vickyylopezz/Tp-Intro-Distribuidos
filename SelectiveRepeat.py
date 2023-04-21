@@ -2,7 +2,7 @@ import socket
 
 class SelectiveRepeat:
 
-    WINDOW_SIZE = 4
+    # WINDOW_SIZE = 4
     TIMEOUT = 2
     CHUNK_SIZE = 1470
     SEQ_NUM_SIZE = 2
@@ -14,6 +14,7 @@ class SelectiveRepeat:
         self.unacked_packets = {}
         self.expected_seq_num = 0
         self.buffer = {}
+        self.window_size = 0
     
     def __pack(self, seqnum, data: bytearray):
         return seqnum + data
@@ -33,10 +34,13 @@ class SelectiveRepeat:
             if not chunk:
                 break
             packets.append(chunk)
+
+        self.window_size = (len(packets) / 2) - 1 if ((len(packets) / 2) - 1 > 0) else 1
+
         while True:
 
             # Send packets up to window size
-            while self.next_seq_num < self.base + self.WINDOW_SIZE and self.next_seq_num < len(packets):
+            while self.next_seq_num < self.base + self.window_size and self.next_seq_num < len(packets):
                 packet = packets[self.next_seq_num]
                 seq_num = self.next_seq_num
                 data = self.__pack(seq_num.to_bytes(2, byteorder="big"), packet)
@@ -97,7 +101,7 @@ class SelectiveRepeat:
                 #seq_num = self.expected_seq_num
                 
                 # Send ACK for received packet
-                ack = self.__pack(seq_num, data)
+                ack = self.__pack(seq_num, b'')
                 self.socket.sendto(ack, addr)
                 #print("mande ack")
 
