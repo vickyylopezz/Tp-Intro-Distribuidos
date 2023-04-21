@@ -14,15 +14,11 @@ class LoggingMeta(type):
 class Logging(metaclass=LoggingMeta):
     def __init__(self):
         self.verbose = False
-        self.entity = None
 
     def set_verbose(self, verbose):
         self.verbose = verbose
 
-    def set_entity(self, entity):
-        self.entity = entity
-
-    def log(self, message):
+    def info(self, message, _to=None):
         if self.verbose:
             now = datetime.datetime.now()
-            print("{} - {} : {}".format(now, self.entity, message))
+            print("{} - {} : {}".format(now, _to, message))

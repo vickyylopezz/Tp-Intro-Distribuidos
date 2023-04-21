@@ -21,6 +21,7 @@ class StopAndWait:
         self.receiver_seqnum = b'0'
         self.socket = socket
         self.timer = Timer()
+        self.log = Logging()
 
     def __pack(self, seqnum, data: bytearray):
         return seqnum + data
@@ -31,29 +32,20 @@ class StopAndWait:
         return seq_num, data
 
     def _send_a_packet(self, data, addr, last_send):
-        log = Logging()
-
         pkt = self.__pack(self.sender_seqnum, data)
-        # sent = self.socket.sendto(pkt, addr)
+        self.log.info("Enviamos paquete de {} bytes".format(len(pkt)), addr)
         self.socket.sendto(pkt, addr)
         start = now()
         acknowledged = False
         timeouts = 0
         if last_send:
-            log.log("Ultimo paquete")
+            self.log.info("Ultimo paquete")
         while not acknowledged:
             try:
                 timeout = self.timer.getTimeout() - (now() - start)
                 self.socket.timeout(timeout)
-                # print(timeout)
-                pkt_received, _ = self.socket.receive()  # revisar, puede ser que le tengamos que pasar el tamanio del mensaje esperado
-                # puede ser que sirva la direccion que devuelve por el multithreading
+                pkt_received, _ = self.socket.receive()
                 seq_num_received, _ = self.__unpack(pkt_received)
-
-                # print("waiting:")
-                # print(self.sender_seqnum)
-                # print("received:")
-                # print(seq_num_received)
                 if seq_num_received == self.sender_seqnum:
                     self.timer.calculateTimeout(now() - start)
                     self.socket.timeout(None)
@@ -63,9 +55,7 @@ class StopAndWait:
             except socket.timeout:
                 if last_send:
                     timeouts += 1
-                # print("timeout")
                 self.timer.timeout()
-                # sent = self.socket.sendto(pkt, addr)
                 self.socket.sendto(pkt, addr)
                 start = now()
 
@@ -74,27 +64,7 @@ class StopAndWait:
                 self.socket.timeout(None)
                 break
 
-        # return sent
-
     def send(self, file, addr):
-        # _data = bytearray(data)
-        # sent = 0
-
-        # for i in range(0, len(_data), self.MAX_DATAGRAM_SIZE):
-        #     last_send = False
-
-        #     if i + self.MAX_DATAGRAM_SIZE > len(_data):
-        #         last_send = True
-
-        #     sent += self._send_a_packet(
-        #         _data[i:min(i + self.MAX_DATAGRAM_SIZE, len(_data))],
-        #         host,
-        #         port,
-        #         last_send
-        #     )
-
-        # self.socket.settimeout(None)
-        # return sent
         while True:
             last_send = False
             chunk = file.read(self.CHUNK_SIZE)

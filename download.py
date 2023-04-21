@@ -17,15 +17,13 @@ transport_protocol = args.transport_protocol
 
 log = Logging()
 log.set_verbose(verbose)
-log.set_entity('download')
 
 client = Client.Client(host, port)
 client.send_operation("d", fpath, fname)
 length = client.receive_length()
 if length == 0:
   client.close_socket()
-  # log.log('No obtuve respuesta del servidor, desconectando')
-  print('No obtuve respuesta del servidor, desconectando')
+  log.info('No obtuve respuesta del servidor, desconectando')
   exit(1)
 client.send_confirmation()
 client.receive_file(length, transport_protocol)
