@@ -34,16 +34,16 @@ Se puede frenar la ejecución del servidor en cualquier momento presionando la l
 
 El cliente cuenta con dos comandos distintos:  
 
-   `upload-file`: permite subir un archivo al servidor.     
-    `download-file`: permite descargar un archivo del servidor.     
+   `upload.py`: permite subir un archivo al servidor.     
+    `download.py`: permite descargar un archivo del servidor.     
   
   
   
-#### upload-file
+#### upload.py
 
 Para correr este módulo, ejecutar en el directorio del archivo _upload-file.py_:
 
-    $ python3 ./upload-file [-h] [-v | -q] (-w | -r) [-H ADDR] [-p PORT] [-s FILEPATH] [-n FILENAME]
+    $ python3 ./upload.py [-h] [-v | -q] (-w | -r) [-H ADDR] [-p PORT] [-s FILEPATH] [-n FILENAME]
 
 Pueden utilizarse distintos flags:
 
@@ -55,11 +55,11 @@ Pueden utilizarse distintos flags:
     `-n` , `--name` permite indicar el nombre con el cual el archivo queda guardado en el servidor.  
     `-w`, `--saw` | `-r`, `--sr` permite elegir el protocolo de capa de transporte. Este flag es obligatorio.
 
-#### download-file
+#### download.py
 
 Para correr este módulo, ejecutar en el directorio del archivo _download-file.py_:
 
-    $ python3 ./download-file [-h] [-v | -q] (-w | -r) [-H ADDR] [-p PORT] [-d FILEPATH] [-n FILENAME]
+    $ python3 ./download.py [-h] [-v | -q] (-w | -r) [-H ADDR] [-p PORT] [-d FILEPATH] [-n FILENAME]
 
 Pueden utilizarse distintos flags:
 
