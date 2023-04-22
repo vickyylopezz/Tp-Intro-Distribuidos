@@ -69,32 +69,23 @@ class Server:
     def handle_download(self, addr, storage_path, messages):
         client_socket = SocketUdp()
         file = File(storage_path + "/" + messages[1], messages[1])
+        self.log.info("Enviamos longitud", addr)
         client_socket.sendto(str(file.size()).encode(), addr)
-        print("esperando confirmacion")
-        # deberia haber un timeout por si se cae la longitud o la conf del cliente
+        self.log.info("Esperamos confirmacion")
         client_socket.timeout(5)
         try:
             confirmation, addr = client_socket.receive()
-            print("llego la confirmacion, comienza transferencia")
-        except:
-            print("No recibi confirmacion, desconectando")
+            self.log.info("Recibimos confirmacion")
+        except socket.timeout:
+            self.log.info("No recibimos confirmacion")
             client_socket.close()
-            return # ?
+            return
         file.open("rb")
-        # while True:
-        #     chunk = file.read(self.CHUNK_SIZE)
-        #     if not chunk:
-        #         break
-        #     self.socket.sendto(chunk, addr)
 
         if(self.transport_protocol == "saw"):
             protocol = StopAndWait.StopAndWait(client_socket)
         elif(self.transport_protocol == "sr"):
             protocol = SelectiveRepeat.SelectiveRepeat(client_socket)
-        
-        # protocol = SelectiveRepeat.SelectiveRepeat(client_socket)
-        # protocol = StopAndWait.StopAndWait(client_socket)
         protocol.send(file, addr)
-
         file.close()
         client_socket.close()
