@@ -74,13 +74,8 @@ class StopAndWait:
                 last_send = True
             self._send_a_packet(chunk, addr, last_send)
 
-    def _recv(self, buffsize, first_time):
+    def _recv(self, file_size, first_time):
         correct_seq_numb = False
-        # print("-----chunks-----")
-        # print(buffsize)
-        # podriamos dejar el timeout para todos los casos, no?
-        # si el cliente muere esperamos unos segundos y salimos
-        # sino vamos a quedar esperando para siempre. Creo que es innecesario el first_time
         if first_time:
             self.socket.timeout(10)
         else:
@@ -88,18 +83,11 @@ class StopAndWait:
 
         try:
             while not correct_seq_numb:
-                # pkt_received, source = self.socket.recvfrom(
-                #     buffsize + self.SEQ_NUM_SIZE)
                 pkt_received, source = self.socket.receive()
+                self.log.info("Recibimos paquete de {} bytes".format(len(pkt_received)), source)
                 seq_num_received, data_received = self.__unpack(pkt_received)
-
-                # print("pkt:")
-                # print(pkt_received)
-                # print("waiting:")
-                # print(self.receiver_seqnum)
-                # print("seq num received:")
-                # print(seq_num_received)
-                # print(data_received)
+                self.log.info("Numero de secuencia esperado {} y recibido {}"
+                              .format(self.receiver_seqnum, seq_num_received), source)
                 if seq_num_received == self.receiver_seqnum:
                     pkt = self.__pack(self.receiver_seqnum, b'')
                     self.socket.sendto(pkt, source)
@@ -113,30 +101,15 @@ class StopAndWait:
 
         except:
             return 0
-        # return data_received, source
 
-    def receive(self, file, buffsize):
-        # print("quiero recibir estos bytes:")
-        # print(buffsize)
-        # data = []
-        # for i in range(0, buffsize, self.MAX_DATAGRAM_SIZE):
-        #     print("-------Iteracion numero-------")
-        #     print(i)
-        #     d, s = self._recv(min(self.MAX_DATAGRAM_SIZE, buffsize - i))
-        #     data.append(d)
-        #
-        # data = b''.join(data)
-        # print("received")
-        # print(data)
-        # return data, s
+    def receive(self, file, file_size):
         rcv_data = 0
         first_time = True
-        while rcv_data < buffsize:
-            # data, addr = self._recv()
-            data = self._recv(buffsize, first_time)
+        while rcv_data < file_size:
+            data = self._recv(file_size, first_time)
             if data == 0:
                 self.socket.close()
-                print("No obtuve datos del otro lado, desconectando")
+                self.log.info("No obtuve paquete, finalizamos")
                 exit(1)
             rcv_data += len(data)
             file.write(data)
