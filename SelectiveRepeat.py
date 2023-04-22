@@ -4,7 +4,7 @@ import math
 class SelectiveRepeat:
 
     # WINDOW_SIZE = 4
-    TIMEOUT = 2
+    TIMEOUT = 1
     CHUNK_SIZE = 1469
     SEQ_NUM_SIZE = 3
 
