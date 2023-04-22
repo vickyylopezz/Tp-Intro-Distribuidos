@@ -7,4 +7,4 @@ Cosas a tener en cuenta
 
 # Como Ejecutar mininet
       
-      ./run_topology #Declientes
+      ./run_topology.sh numero_de_clientes porcentaje_de_perdida
