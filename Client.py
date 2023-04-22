@@ -20,9 +20,9 @@ class Client:
         self.log.info('Enviamos operacion')
         self.file = File.File(fpath, fname)
         if operation == "u":
-            self.protocol_message = operation + '-' + str(self.file.size()) + '-' + fname
+            self.protocol_message = operation + '#' + str(self.file.size()) + '#' + fname
         else:
-            self.protocol_message = operation + '-' + fname
+            self.protocol_message = operation + '#' + fname
         encoded_message = str.encode(self.protocol_message)
         self.socket.sendto(encoded_message, self.server_address)
 

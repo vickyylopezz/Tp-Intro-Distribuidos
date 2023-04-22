@@ -7,6 +7,12 @@ Este documento contiene instrucciones de cómo ejecutar el cliente y el servidor
 * mininet
 
 ## Pasos a seguir para ejecutar la aplicación:
+
+### Cómo ejecutar mininet
+Para ejecutar _mininet_, correr el siguiente comando, especificando el número de clientes y el porcentaje de pérdida de los enlaces:
+
+      ./run_topology.sh numero_de_clientes porcentaje_de_perdida
+
 ### Servidor
 
 El servidor consta de un sólo comando `start-server`, que permite iniciar el servidor. Para correrlo, ejecutar en el directorio del archivo _start-server.py_:

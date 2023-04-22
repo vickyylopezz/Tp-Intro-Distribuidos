@@ -45,8 +45,7 @@ class Server:
             t.join()
 
     def handle_client(self, message, address):
-        print(message)
-        messages = message.decode().split("-")
+        messages = message.decode().split("#")
         if messages[0] == "u":
             self.handle_upload(address, self.storage, messages)
         if messages[0] == "d":
