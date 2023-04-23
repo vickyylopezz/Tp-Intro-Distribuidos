@@ -1,10 +1,11 @@
 import socket
 import math
 from Logging import Logging
+from Timer import Timer
+from time import perf_counter as now
 
 class SelectiveRepeat:
     
-    TIMEOUT = 1
     CHUNK_SIZE = 1469
     SEQ_NUM_SIZE = 3
 
@@ -27,27 +28,30 @@ class SelectiveRepeat:
         return seq_num, data
     
     def send(self, file, addr):
-        packets = []
 
         len_packets = math.ceil(file.size() / self.CHUNK_SIZE)
+        
         self.window_size = (len_packets / 2) - 1 if ((len_packets / 2) - 1 > 0) else 1
+     
         while True:
-
             # Send packets up to window size
             while self.next_seq_num < self.base + self.window_size and self.next_seq_num < len_packets:
+                
                 packet = file.read(self.CHUNK_SIZE)
                 seq_num = self.next_seq_num
                 data = self.__pack(seq_num.to_bytes(3, byteorder="big"), packet)
                 self.log.info("Enviamos paquete de {} bytes".format(len(packet)), addr)
 
                 self.socket.sendto(data, addr)
+
                 self.unacked_packets[seq_num] = packet
                 self.next_seq_num += 1
             
             # Receive ACKs and update state
-            self.socket.timeout(self.TIMEOUT)
             if(self.base < len_packets):
+                self.socket.timeout(0.1)
                 try:
+                    
                     ack, addr = self.socket.receive()
                     seq_num_receive, _ = self.__unpack(ack)
 
@@ -56,10 +60,13 @@ class SelectiveRepeat:
 
                     del self.unacked_packets[ack_num]
                     self.base += 1
-                    
+                
                 except socket.timeout:
+
                     # Resend unacknowledged packets
                     for seq_num, packet in self.unacked_packets.items():
+                        self.log.info("Reenviamos paquete {}".format(seq_num), addr)
+                        self.socket.timeout(None)
                         self.socket.sendto(self.__pack(seq_num.to_bytes(3, byteorder="big"), packet), addr)
 
             # Exit loop if all packets have been acknowledged
@@ -109,6 +116,9 @@ class SelectiveRepeat:
                 else:
                     self.buffer[seq_num_int] = data
             except socket.timeout:
-                break
+                if rcv_data < buffsize:
+                    continue
+                else:
+                    break
         self.log.info("No obtuve paquete, finalizamos")
 
