@@ -78,11 +78,13 @@ class SelectiveRepeat:
     def receive(self, file, buffsize):
         rcv_data = 0
         last_write = -1
+        first_time = True
         self.socket.timeout(5)
         while True:
             try:
                 # Receive packet
                 packet, addr = self.socket.receive()
+                first_time = False
                 self.log.info("Recibimos paquete de {} bytes".format(len(packet)), addr)
 
                 seq_num, data = self.__unpack(packet)
@@ -116,7 +118,9 @@ class SelectiveRepeat:
                 else:
                     self.buffer[seq_num_int] = data
             except socket.timeout:
-                if rcv_data < buffsize:
+                if first_time:
+                    break
+                elif rcv_data < buffsize:
                     continue
                 else:
                     break
