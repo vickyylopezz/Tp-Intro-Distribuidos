@@ -68,6 +68,13 @@ class Server:
     def handle_download(self, addr, storage_path, messages):
         client_socket = SocketUdp()
         file = File(storage_path + "/" + messages[1], messages[1])
+        try:
+            file.check()
+        except:
+            self.log.info("Archivo no encontrado", addr)
+            client_socket.sendto(str(-1).encode(), addr)
+            client_socket.close()
+            return
         self.log.info("Enviamos longitud", addr)
         client_socket.sendto(str(file.size()).encode(), addr)
         self.log.info("Esperamos confirmacion")
@@ -81,9 +88,9 @@ class Server:
             return
         file.open("rb")
 
-        if(self.transport_protocol == "saw"):
+        if (self.transport_protocol == "saw"):
             protocol = StopAndWait.StopAndWait(client_socket)
-        elif(self.transport_protocol == "sr"):
+        elif (self.transport_protocol == "sr"):
             protocol = SelectiveRepeat.SelectiveRepeat(client_socket)
         protocol.send(file, addr)
         file.close()

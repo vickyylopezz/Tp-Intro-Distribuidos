@@ -18,10 +18,11 @@ transport_protocol = args.transport_protocol
 log = Logging()
 log.set_verbose(verbose)
 client = Client(host, port)
-client.send_operation(OperationEnum.UPLOAD.value, fpath, fname)
-connected = client.wait_confirmation()
-if not connected:
-  client.close_socket()
-  log.info('No obtuve respuesta del servidor, desconectando')
-  exit(1)
-client.send_file(transport_protocol)
+status_operation = client.send_operation(OperationEnum.UPLOAD.value, fpath, fname)
+if status_operation:
+    connected = client.wait_confirmation()
+    if not connected:
+        client.close_socket()
+        log.info('No obtuve respuesta del servidor, desconectando')
+        exit(1)
+    client.send_file(transport_protocol)

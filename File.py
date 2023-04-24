@@ -1,10 +1,17 @@
 import os
 
+from FileNotFoundException import FileNotFoundException
+
+
 class File:
     def __init__(self, fpath, fname):
         self.fpath = fpath
         self.fname = fname
         self.fd = None
+
+    def check(self):
+        if not os.path.isfile(self.fpath):
+            raise FileNotFoundException()
 
     def size(self):
         return os.path.getsize(self.fpath)

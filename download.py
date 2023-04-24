@@ -21,9 +21,14 @@ log.set_verbose(verbose)
 client = Client.Client(host, port)
 client.send_operation("d", fpath, fname)
 length = client.receive_length()
-if length == 0:
-  client.close_socket()
-  log.info('No obtuve respuesta del servidor, desconectando')
-  exit(1)
-client.send_confirmation()
-client.receive_file(length, transport_protocol)
+if int(length) == 0:
+    client.close_socket()
+    log.info('No obtuve respuesta del servidor, desconectando')
+    exit(1)
+elif int(length) == -1:
+    client.close_socket()
+    log.info('Archivo no encontrado')
+    exit(1)
+else:
+    client.send_confirmation()
+    client.receive_file(length, transport_protocol)
