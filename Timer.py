@@ -1,5 +1,4 @@
 class Timer:
-
     def __init__(self):
         self.timeoutInterval = 1
         self.ALPHA = 0.125
@@ -10,7 +9,9 @@ class Timer:
 
     def calculateTimeout(self, sample):
         self.estimatedRTT = (1 - self.ALPHA) * self.estimatedRTT + self.ALPHA * sample
-        self.devRTT = (1 - self.BETA) * self.devRTT + self.BETA * abs(sample - self.estimatedRTT)
+        self.devRTT = (1 - self.BETA) * self.devRTT + self.BETA * abs(
+            sample - self.estimatedRTT
+        )
         self.timeoutInterval = self.estimatedRTT + 4 * self.devRTT
 
     def getTimeout(self):

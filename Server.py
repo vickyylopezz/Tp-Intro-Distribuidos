@@ -6,8 +6,8 @@ from SocketUdp import SocketUdp
 from File import File
 import threading
 
-class Server:
 
+class Server:
     def __init__(self, host, port, storage_path, transport_protocol):
         self.socket = SocketUdp(host, port)
         self.socket.bind()
@@ -19,24 +19,26 @@ class Server:
         self.log = Logging()
 
     def start(self):
-        self.log.info('Inicio server')
+        self.log.info("Inicio server")
         self.main_thread = threading.Thread(target=self.listen)
         self.main_thread.start()
 
     def stop(self):
         self.active = False
         self.main_thread.join()
-        self.log.info('Fin server')
+        self.log.info("Fin server")
 
     def listen(self):
         self.active = True
-        self.log.info('Esperando clientes')
+        self.log.info("Esperando clientes")
         while self.active:
             self.socket.timeout(5)
             try:
                 protocol_message, addr = self.socket.receive()
-                self.log.info('Atendiendo cliente', addr)
-                client_thread = threading.Thread(target=self.handle_client, args=(protocol_message, addr))
+                self.log.info("Atendiendo cliente", addr)
+                client_thread = threading.Thread(
+                    target=self.handle_client, args=(protocol_message, addr)
+                )
                 client_thread.start()
                 self.threads.append(client_thread)
             except socket.timeout:
@@ -54,12 +56,12 @@ class Server:
     def handle_upload(self, addr, storage_path, messages):
         client_socket = SocketUdp()
         self.log.info("Enviamos confirmacion", addr)
-        client_socket.sendto('g'.encode(), addr)
+        client_socket.sendto("g".encode(), addr)
         file = File(storage_path + "/" + messages[2], messages[2])
-        file.open('wb')
-        if(self.transport_protocol == "saw"):
+        file.open("wb")
+        if self.transport_protocol == "saw":
             protocol = StopAndWait.StopAndWait(client_socket)
-        elif(self.transport_protocol == "sr"):
+        elif self.transport_protocol == "sr":
             protocol = SelectiveRepeat.SelectiveRepeat(client_socket)
         protocol.receive(file, int(messages[1]))
         file.close()
@@ -88,9 +90,9 @@ class Server:
             return
         file.open("rb")
 
-        if (self.transport_protocol == "saw"):
+        if self.transport_protocol == "saw":
             protocol = StopAndWait.StopAndWait(client_socket)
-        elif (self.transport_protocol == "sr"):
+        elif self.transport_protocol == "sr":
             protocol = SelectiveRepeat.SelectiveRepeat(client_socket)
         protocol.send(file, addr)
         file.close()

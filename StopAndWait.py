@@ -6,9 +6,9 @@ from time import perf_counter as now
 
 
 def toggle(seq_number):
-    if seq_number == b'0':
-        return b'1'
-    return b'0'
+    if seq_number == b"0":
+        return b"1"
+    return b"0"
 
 
 class StopAndWait:
@@ -17,8 +17,8 @@ class StopAndWait:
     CHUNK_SIZE = 1471
 
     def __init__(self, socket):
-        self.sender_seqnum = b'0'
-        self.receiver_seqnum = b'0'
+        self.sender_seqnum = b"0"
+        self.receiver_seqnum = b"0"
         self.socket = socket
         self.timer = Timer()
         self.log = Logging()
@@ -27,7 +27,7 @@ class StopAndWait:
         return seqnum + data
 
     def __unpack(self, packet):
-        seq_num = packet[:self.SEQ_NUM_SIZE]
+        seq_num = packet[: self.SEQ_NUM_SIZE]
         data = packet[self.SEQ_NUM_SIZE:]
         return seq_num, data
 
@@ -84,17 +84,23 @@ class StopAndWait:
         try:
             while not correct_seq_numb:
                 pkt_received, source = self.socket.receive()
-                self.log.info("Recibimos paquete de {} bytes".format(len(pkt_received)), source)
+                self.log.info(
+                    "Recibimos paquete de {} bytes".format(len(pkt_received)), source
+                )
                 seq_num_received, data_received = self.__unpack(pkt_received)
-                self.log.info("Numero de secuencia esperado {} y recibido {}"
-                              .format(self.receiver_seqnum, seq_num_received), source)
+                self.log.info(
+                    "Numero de secuencia esperado {} y recibido {}".format(
+                        self.receiver_seqnum, seq_num_received
+                    ),
+                    source,
+                )
                 if seq_num_received == self.receiver_seqnum:
-                    pkt = self.__pack(self.receiver_seqnum, b'')
+                    pkt = self.__pack(self.receiver_seqnum, b"")
                     self.socket.sendto(pkt, source)
                     self.receiver_seqnum = toggle(self.receiver_seqnum)
                     correct_seq_numb = True
                 else:
-                    pkt = self.__pack(toggle(self.receiver_seqnum), b'')
+                    pkt = self.__pack(toggle(self.receiver_seqnum), b"")
                     self.socket.sendto(pkt, source)
 
             return data_received

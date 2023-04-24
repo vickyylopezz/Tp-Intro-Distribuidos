@@ -16,9 +16,8 @@ server = Server(host, port, storage_path, transport_protocol)
 server.start()
 while server.active:
     try:
-        log.info('Para finalizar q')
-        if input().lower() == 'q':
+        log.info("Para finalizar q")
+        if input().lower() == "q":
             server.stop()
     except KeyboardInterrupt:
         server.stop()
-

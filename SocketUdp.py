@@ -1,8 +1,9 @@
 import socket
 
+
 class SocketUdp:
     def __init__(self, ip=None, port=None):
-        self.ip = ip or '127.0.0.1'
+        self.ip = ip or "127.0.0.1"
         self.port = port or 8888
         # self.buffer = 50000
         self.buffer = 1472
@@ -10,7 +11,7 @@ class SocketUdp:
 
     def timeout(self, time):
         self.socket.settimeout(time)
-        
+
     def bind(self):
         self.socket.bind((self.ip, self.port))
 

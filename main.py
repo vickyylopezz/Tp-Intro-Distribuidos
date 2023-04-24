@@ -1,5 +1,5 @@
-import Server 
+import Server
+
 if __name__ == "__main__":
-    print('Hi')
+    print("Hi")
     server = Server.Server()
-    
