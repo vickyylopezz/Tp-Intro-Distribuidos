@@ -1,6 +1,6 @@
 import socket
 import math
-from Logging import Logging
+from lib.Logging import Logging
 
 
 class SelectiveRepeat:

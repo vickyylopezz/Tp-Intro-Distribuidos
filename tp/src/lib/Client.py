@@ -1,10 +1,10 @@
 import socket
 
-import SelectiveRepeat
-import StopAndWait
-from Logging import Logging
-from SocketUdp import SocketUdp
-import File
+import lib.SelectiveRepeat as SelectiveRepeat
+import lib.StopAndWait as StopAndWait
+from lib.Logging import Logging
+from lib.SocketUdp import SocketUdp
+import lib.File as File
 
 
 class Client:

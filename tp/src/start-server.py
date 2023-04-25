@@ -1,6 +1,6 @@
-from Logging import Logging
-from Server import Server
-from ServerArguments import ServerArguments
+from lib.Logging import Logging
+from lib.Server import Server
+from lib.ServerArguments import ServerArguments
 
 arguments = ServerArguments()
 args = arguments.parse()

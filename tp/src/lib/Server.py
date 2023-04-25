@@ -1,9 +1,9 @@
 import socket
-import SelectiveRepeat
-import StopAndWait
-from Logging import Logging
-from SocketUdp import SocketUdp
-from File import File
+import lib.SelectiveRepeat as SelectiveRepeat
+import lib.StopAndWait as StopAndWait
+from lib.Logging import Logging
+from lib.SocketUdp import SocketUdp
+from lib.File import File
 import threading
 
 

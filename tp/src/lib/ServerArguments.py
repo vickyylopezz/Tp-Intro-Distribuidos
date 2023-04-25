@@ -1,4 +1,4 @@
-import Arguments
+import lib.Arguments as Arguments
 
 
 class ServerArguments(Arguments.Arguments):

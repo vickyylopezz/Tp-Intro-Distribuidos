@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 
-from Client import Client
-from ClientArguments import ClientArguments
-from Logging import Logging
-from OperationEnum import OperationEnum
+from lib.Client import Client
+from lib.ClientArguments import ClientArguments
+from lib.Logging import Logging
+from lib.OperationEnum import OperationEnum
 
 arguments = ClientArguments(OperationEnum.UPLOAD)
 args = arguments.parse()

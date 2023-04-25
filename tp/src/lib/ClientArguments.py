@@ -1,5 +1,5 @@
-import Arguments
-from OperationEnum import OperationEnum
+import lib.Arguments as Arguments
+from lib.OperationEnum import OperationEnum
 
 
 class ClientArguments(Arguments.Arguments):
@@ -27,13 +27,13 @@ class ClientArguments(Arguments.Arguments):
                 "-s",
                 "--src",
                 type=str,
-                default="./files/file.txt",
+                default="./lib/files/file.txt",
                 required=False,
                 help="source file path",
                 dest="filepath",
             )
         elif self.operation == OperationEnum.DOWNLOAD:
-            default_name = "./files/file.txt"
+            default_name = "./lib/files/file.txt"
             self.parser.add_argument(
                 "-d",
                 "--dst",

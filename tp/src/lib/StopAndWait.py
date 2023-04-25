@@ -1,7 +1,7 @@
 import socket
 
-from Logging import Logging
-from Timer import Timer
+from lib.Logging import Logging
+from lib.Timer import Timer
 from time import perf_counter as now
 
 

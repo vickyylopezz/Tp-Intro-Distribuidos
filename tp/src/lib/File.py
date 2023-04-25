@@ -1,6 +1,6 @@
 import os
 
-from FileNotFoundException import FileNotFoundException
+from lib.FileNotFoundException import FileNotFoundException
 
 
 class File:
