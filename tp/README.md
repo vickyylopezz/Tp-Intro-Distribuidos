@@ -43,7 +43,7 @@ El cliente cuenta con dos comandos distintos:
 
 Para correr este módulo, ejecutar en el directorio del archivo _upload-file.py_:
 
-    $ python3 ./upload.py [-h] [-v | -q] (-w | -r) [-H ADDR] [-p PORT] [-d FILEPATH] [-n FILENAME]
+    $ python3 ./upload.py [-h] [-v | -q] (-w | -r) [-H ADDR] [-p PORT] [-s FILEPATH] [-n FILENAME]
 
 Pueden utilizarse distintos flags:
 
@@ -51,8 +51,8 @@ Pueden utilizarse distintos flags:
     `-v` , `--verbose` | `-q` , `--quiet` muestra detalles extra sobre el envío de archivos.  
     `-H` , `--host` permite indicar la dirección IP del servidor.  
     `-p` , `--port` permite indicar el puerto en el que está escuchando el servidor.  
-    `-d` , `--src` permite indicar la ruta del archivo a enviar.  
-    `-n` , `--name` permite indicar el nombre con el cual el archivo esta guardado en el servidor.  
+    `-s` , `--src` permite indicar la ruta del archivo a enviar.  
+    `-n` , `--name` permite indicar el nombre con el cual el archivo se guardará en el servidor.  
     `-w`, `--saw` | `-r`, `--sr` permite elegir el protocolo de capa de transporte. Este flag es obligatorio.
 
 #### download.py
@@ -74,4 +74,4 @@ Pueden utilizarse distintos flags:
 ## Cuestiones a considerar
 
 * No se permite subir archivos al servidor ni solicitar la descarga de archivos cuyo nombre contenga el caracter `#`, ya que se usa como separador en los mensajes de protocolo de aplicación.
-* El tamaño máximo de archivo que se puede subir o bajar es de 2 GB.
+* El tamaño máximo de archivo que se puede subir o bajar es de 1 GB.

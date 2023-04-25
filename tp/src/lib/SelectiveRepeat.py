@@ -39,7 +39,7 @@ class SelectiveRepeat:
                 packet = file.read(self.CHUNK_SIZE)
                 seq_num = self.next_seq_num
                 data = self.__pack(seq_num.to_bytes(3, byteorder="big"), packet)
-                self.log.info("Enviamos paquete de {} bytes".format(len(packet)), addr)
+                self.log.info("Enviamos paquete de {} bytes".format(len(packet)+3), addr)
 
                 self.socket.sendto(data, addr)
 
@@ -62,6 +62,7 @@ class SelectiveRepeat:
                     # Resend unacknowledged packets
                     for seq_num, packet in self.unacked_packets.items():
                         self.socket.timeout(None)
+                        self.log.info("Enviamos paquete de {} bytes".format(len(packet)+3), addr) 
                         self.socket.sendto(
                             self.__pack(seq_num.to_bytes(3, byteorder="big"), packet),
                             addr,
